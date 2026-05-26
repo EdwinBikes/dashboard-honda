@@ -634,7 +634,7 @@ export default function DashboardLayout({ data, activeDtcCodes }: DashboardLayou
                 <div className="my-3">
                   <div className="flex justify-between items-baseline mb-1">
                     <span className="text-3xl font-extrabold font-mono text-amber-300">
-                      {(data.map ? data.map / 100 : 2.2).toFixed(2)}
+                      {(data.map ? data.map / 1000 : 0.22).toFixed(2)}
                     </span>
                     <span className="text-xs text-gray-400 font-bold font-mono">Bar Absoluto</span>
                   </div>

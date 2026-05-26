@@ -98,36 +98,62 @@ export default function InstructionsPWA() {
       {activeSegment === 'bt' && (
         <div className="flex flex-col gap-4 bg-slate-900/40 p-5 rounded-xl border border-slate-900/60 leading-relaxed text-sm">
           <h3 className="text-sm font-black uppercase tracking-wider text-[#ff7700] mb-2 flex items-center gap-1.5">
-            <Bluetooth size={17} /> Conectando la ECU por Web Bluetooth:
+            <Bluetooth size={17} /> Conectando la ECU por Web Serial o Web Bluetooth:
           </h3>
           <p className="text-gray-300">
-            Los navegadores Chrome en Android son los únicos que admiten la API estándar de <strong>Web Bluetooth</strong>. Esto te permite conectar adaptadores OBD2 físicos directamente a esta app sin instalar softwares de terceros:
+            Los adaptadores OBD o chips Bluetooth varían en su tipo de transmisión. Dependiendo de tu hardware, sigue la guía adecuada:
           </p>
 
-          <h4 className="font-extrabold uppercase text-xs text-gray-200 mt-2">Guía de Conexión del Escáner OBD2:</h4>
-          
-          <ul className="list-disc list-inside space-y-3 pl-1 text-gray-300">
-            <li>
-              <strong>Paso 1:</strong> Conecta tu adaptador Bluetooth OBD2 o chip integrado (p. ej. ELM327 BLE modificado, VGate iCar o Carista) al puerto de diagnóstico OBD-II de tu carro (comúnmente debajo del volante o guantera).
-            </li>
-            <li>
-              <strong>Paso 2:</strong> Pon el carro en contacto / arranque (para alimentar de corriente el chip de la ECU).
-            </li>
-            <li>
-              <strong>Paso 3:</strong> Presiona el botón del Bluetooth <strong>&quot;Conectar ECU&quot;</strong> en la pestaña superior de esta aplicación.
-            </li>
-            <li>
-              <strong>Paso 4:</strong> Chrome para Android te desplegará automáticamente la lista oficial de adaptadores OBD Bluetooth detectados. Selecciónalo y toca <strong>Vincular (Pair)</strong>. La app iniciará el barrido de datos.
-            </li>
-          </ul>
+          <div className="p-4 bg-cyan-950/40 border border-[#00f0ff]/20 rounded-xl mb-2">
+            <h4 className="font-extrabold uppercase text-xs text-[#00f0ff] flex items-center gap-1.5 mb-2">
+              📟 Opción A: Módulo ZS-040 (HC-05 / HC-06 / Bluetooth Classic)
+            </h4>
+            <p className="text-xs text-gray-300 leading-relaxed mb-3">
+              Módulos como el <strong>ZS-040 / HC-05</strong> son dispositivos de <strong>Bluetooth Clásico (SPP)</strong>. Google Chrome no permite buscarlos con Web Bluetooth directamente. Sin embargo, puedes conectarlos mapeándolos como un puerto serial virtual usando nuestra función <strong>Web Serial API</strong>:
+            </p>
+            <ol className="list-decimal list-inside space-y-2 text-xs text-gray-300 pl-1">
+              <li>
+                <strong>Paso 1:</strong> Vincula y empareja el Bluetooth de tu ZS-040/HC-05 con la configuración de Bluetooth nativa de tu computadora o celular Android (el PIN por defecto usualmente es <code className="bg-black/60 px-1.5 py-0.5 rounded text-amber-500 font-mono">1234</code> o <code className="bg-black/60 px-1.5 py-0.5 rounded text-amber-500 font-mono">0000</code>).
+              </li>
+              <li>
+                <strong>Paso 2:</strong> Al emparejarse, tu sistema operativo creará un <strong>puerto COM virtual de salida (COM Port)</strong>.
+              </li>
+              <li>
+                <strong>Paso 3:</strong> Presiona el botón azul brillante <strong>&quot;CONECTAR SERIAL (ZS-040)&quot;</strong> arriba en el encabezado de esta App.
+              </li>
+              <li>
+                <strong>Paso 4:</strong> Selecciona el puerto COM correspondiente a tu módulo en la lista de Chrome y haz clic en <strong>Conectar</strong>. ¡La sintonización en vivo a 38400 bps se activará de inmediato!
+              </li>
+            </ol>
+          </div>
+
+          <div className="p-4 bg-blue-950/30 border border-blue-500/20 rounded-xl">
+            <h4 className="font-extrabold uppercase text-xs text-blue-400 flex items-center gap-1.5 mb-2">
+              🌐 Opción B: Escáneres OBD2 BLE (Bluetooth Low Energy)
+            </h4>
+            <ol className="list-decimal list-inside space-y-2 text-xs text-gray-300 pl-1">
+              <li>
+                Conecta tu adaptador físico BLE OBDII al puerto de diagnóstico de tu vehículo/moto.
+              </li>
+              <li>
+                Pon el vehículo en contacto/encendido.
+              </li>
+              <li>
+                Presiona el botón <strong>&quot;ESCANEAR BLE&quot;</strong> en la pestaña superior de esta aplicación.
+              </li>
+              <li>
+                Selecciona tu adaptador de la lista emergente y presiona <strong>Vincular</strong>.
+              </li>
+            </ol>
+          </div>
 
           <div className="bg-amber-500/5 border border-amber-500/10 p-4 rounded-lg mt-2 font-sans">
             <div className="flex items-center gap-2 mb-1.5">
               <AlertCircle size={15} className="text-amber-500" />
-              <span className="text-xs font-black uppercase text-amber-500 tracking-wider">Compatibilidad de Chip Bluetooth</span>
+              <span className="text-xs font-black uppercase text-amber-500 tracking-wider">Compatibilidad de Chip y Velocidad Baud</span>
             </div>
             <p className="text-xs text-gray-400">
-              Asegúrate de que tu interfaz OBD2 sea del tipo <strong>Bluetooth Low Energy (BLE)</strong> o utiliza adaptadores Web-GATT. Los adaptadores antiguos clásicos Bluetooth 2.0 SSP requieren que habilites la bandera <code className="bg-black/80 px-1 rounded text-red-400 font-mono">#enable-experimental-web-platform-features</code> en Chrome escribiendo <code className="bg-black/80 px-1 rounded text-blue-400 font-mono">chrome://flags</code> en la barra de navegación de tu Android.
+              Para Honda OBD1 (P28 con Crome QD3 datalogging), el módulo <strong>ZS-040</strong> transmite los bytes a una velocidad predeterminada de <strong>38400 bps</strong>. Nuestra interfaz de Web Serial abre el flujo de datos optimizado para recibir los PIDs de RPM, TPS, MAP e inyector en tiempo real con latencia ultra baja.
             </p>
           </div>
         </div>
